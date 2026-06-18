@@ -31,6 +31,7 @@ export class PropertiesEditor extends Component {
         />,
         <PropertyValueEditor
           key={'value-' + index}
+          propertyKey={property.key}
           text={property.value}
           left={boxPosition.x + propertiesBox.keysWidth + propertiesBox.colonWidth + propertiesBox.spaceWidth}
           top={boxPosition.y + index * propertiesBox.lineHeight}

@@ -166,6 +166,50 @@ export const styleFromDatabaseEntity = (entity) => {
   }, {})
 }
 
+const adjustNodeProperties = (properties) => {
+  const adjusted = { ...properties }
+  
+  if (!adjusted.hasOwnProperty('unit')) {
+    adjusted.unit = ''
+  }
+  if (!adjusted.hasOwnProperty('name')) {
+    adjusted.name = ''
+  }
+
+  if (adjusted.hasOwnProperty('type')) {
+    const type = adjusted.type
+    if (type === 'metric') {
+      if (!adjusted.hasOwnProperty('promQL')) {
+        adjusted.promQL = ''
+      }
+      delete adjusted.SQL
+      delete adjusted.value
+    } else if (type === 'query log') {
+      if (!adjusted.hasOwnProperty('SQL')) {
+        adjusted.SQL = ''
+      }
+      delete adjusted.promQL
+      delete adjusted.value
+    } else if (['neo4j setting', 'server config', 'client config'].includes(type)) {
+      if (!adjusted.hasOwnProperty('value')) {
+        adjusted.value = ''
+      }
+      delete adjusted.promQL
+      delete adjusted.SQL
+    } else {
+      delete adjusted.promQL
+      delete adjusted.SQL
+      delete adjusted.value
+    }
+  } else {
+    delete adjusted.promQL
+    delete adjusted.SQL
+    delete adjusted.value
+  }
+
+  return adjusted
+}
+
 export const renameProperty = (entity, oldPropertyKey, newPropertyKey) => {
   const properties = {}
   Object.keys(entity.properties).forEach((key) => {
@@ -177,7 +221,7 @@ export const renameProperty = (entity, oldPropertyKey, newPropertyKey) => {
   })
   return {
     ...entity,
-    properties
+    properties: isNode(entity) ? adjustNodeProperties(properties) : properties
   }
 }
 
@@ -186,7 +230,7 @@ export const setProperty = (entity, key, value) => {
   properties[key] = value
   return {
     ...entity,
-    properties
+    properties: isNode(entity) ? adjustNodeProperties(properties) : properties
   }
 }
 
@@ -216,7 +260,7 @@ export const removeProperty = (entity, keyToRemove) => {
   })
   return {
     ...entity,
-    properties
+    properties: isNode(entity) ? adjustNodeProperties(properties) : properties
   }
 }
 

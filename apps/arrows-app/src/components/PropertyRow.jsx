@@ -174,7 +174,27 @@ export class PropertyRow extends Component {
         disabled={keyDisabled}
       />
     )
-    const valueField = (
+    const valueField = propertyKey === 'type' ? (
+      <select
+        value={valueFieldValue}
+        onChange={(event) => onValueChange(event.target.value)}
+        ref={elm => this.valueInput = elm}
+        disabled={valueDisabled}
+        style={{
+          border: 'none',
+          background: 'transparent',
+          outline: 'none',
+          padding: 0,
+          margin: 0,
+          width: '100%',
+          cursor: 'pointer'
+        }}
+      >
+        {['metric', 'neo4j setting', 'server config', 'client config', 'query log'].map(opt => (
+          <option key={opt} value={opt}>{opt}</option>
+        ))}
+      </select>
+    ) : (
       <Input
         value={valueFieldValue}
         placeholder={valueFieldPlaceHolder}

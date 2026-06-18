@@ -21,7 +21,12 @@ const graph = (state = emptyGraph(), action) => {
         caption: action.caption,
         style: action.style,
         labels: [],
-        properties: {}
+        properties: {
+          type: 'metric',
+          unit: '',
+          name: '',
+          promQL: ''
+        }
       })
       return {style: state.style, nodes: newNodes, relationships: state.relationships}
     }
@@ -34,7 +39,12 @@ const graph = (state = emptyGraph(), action) => {
           caption: action.caption,
           style: action.style,
           labels: [],
-          properties: {}
+          properties: {
+            type: 'metric',
+            unit: '',
+            name: '',
+            promQL: ''
+          }
         }
       })]
       const newRelationships = [...state.relationships, ...action.newRelationshipIds.map((newRelationshipId, i) => {
