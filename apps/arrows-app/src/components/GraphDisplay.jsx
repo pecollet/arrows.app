@@ -13,6 +13,7 @@ import {
 } from "../interactions/Keybindings";
 import MouseHandler from "../interactions/MouseHandler";
 import GraphTextContainer from "../containers/GraphTextContainer";
+import { interpolatePromQL } from "../model/properties";
 
 class GraphDisplay extends Component {
   constructor(props) {
@@ -90,11 +91,14 @@ class GraphDisplay extends Component {
     if (!visualGraph || !visualGraph.graph || !visualGraph.graph.nodes || !fetchPrometheusData) return
 
     visualGraph.graph.nodes.forEach(node => {
-      const promql = node.properties && node.properties.promql
-      if (promql) {
-        const cached = prometheusData && prometheusData[node.id]
-        if (!cached || cached.query !== promql) {
-          fetchPrometheusData(node.id, promql)
+      const promQL = node.properties && node.properties.promQL
+      if (promQL) {
+        const interpolatedQuery = interpolatePromQL(promQL, node.properties)
+        if (interpolatedQuery) {
+          const cached = prometheusData && prometheusData[node.id]
+          if (!cached || cached.query !== interpolatedQuery) {
+            fetchPrometheusData(node.id, interpolatedQuery)
+          }
         }
       }
     })

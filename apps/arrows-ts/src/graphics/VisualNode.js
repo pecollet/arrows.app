@@ -103,7 +103,12 @@ export default class VisualNode {
     const hasCaption = !!node.caption
     const hasLabels = node.labels.length > 0
     const visualProperties = { ...node.properties }
-    delete visualProperties.promql
+    delete visualProperties.promQL
+    Object.keys(visualProperties).forEach(key => {
+      if (key.startsWith('param_')) {
+        delete visualProperties[key]
+      }
+    })
     const hasProperties = false
 
     const outsidePosition = style('outside-position')
@@ -176,7 +181,8 @@ export default class VisualNode {
       }
     }
 
-    if (node.properties.promql) {
+    const promQL = node.properties && node.properties.promQL
+    if (promQL) {
       this.outsideComponents.push(this.prometheusPlot = new PrometheusPlot(
         node.id, prometheusState, this.outsideOrientation, style))
     }

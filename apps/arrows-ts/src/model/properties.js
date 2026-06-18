@@ -276,3 +276,15 @@ export const removeArrowsProperty = (entity, keyToRemove) => {
 export const indexablePropertyText = (entity) => {
   return Object.keys(entity.properties).map((key) => `${key} ${entity.properties[key]}`)
 }
+
+export const interpolatePromQL = (query, properties) => {
+  if (!query) return query
+  if (!properties) return query
+
+  return query.replace(/\$([a-zA-Z0-9_]+)/g, (match, varName) => {
+    if (varName.startsWith('param_') && Object.prototype.hasOwnProperty.call(properties, varName)) {
+      return properties[varName]
+    }
+    return match
+  })
+}
