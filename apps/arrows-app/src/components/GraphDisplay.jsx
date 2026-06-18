@@ -76,11 +76,28 @@ class GraphDisplay extends Component {
     this.touchHandler = new MouseHandler(this.canvas)
     this.fitCanvasSize(this.canvas, this.props.canvasSize.width, this.props.canvasSize.height)
     this.drawVisuals()
+    this.checkPrometheusQueries()
   }
 
   componentDidUpdate() {
     this.fitCanvasSize(this.canvas, this.props.canvasSize.width, this.props.canvasSize.height)
     this.drawVisuals()
+    this.checkPrometheusQueries()
+  }
+
+  checkPrometheusQueries() {
+    const { visualGraph, prometheusData, fetchPrometheusData } = this.props
+    if (!visualGraph || !visualGraph.graph || !visualGraph.graph.nodes || !fetchPrometheusData) return
+
+    visualGraph.graph.nodes.forEach(node => {
+      const promql = node.properties && node.properties.promql
+      if (promql) {
+        const cached = prometheusData && prometheusData[node.id]
+        if (!cached || cached.query !== promql) {
+          fetchPrometheusData(node.id, promql)
+        }
+      }
+    })
   }
 
   render() {

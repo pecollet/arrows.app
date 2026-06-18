@@ -11,6 +11,7 @@ import {selectAll, jumpToNextNode, tryActivateEditing} from "../actions/selectio
 import {computeCanvasSize} from "../model/applicationLayout";
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 import {getBackgroundImage} from "../selectors";
+import {fetchPrometheusData} from "../actions/prometheus";
 
 const mapStateToProps = state => {
   return {
@@ -22,7 +23,8 @@ const mapStateToProps = state => {
     handles: getTransformationHandles(state),
     canvasSize: computeCanvasSize(state.applicationLayout),
     viewTransformation: state.viewTransformation,
-    storage: state.storage
+    storage: state.storage,
+    prometheusData: state.prometheusData
   }
 }
 
@@ -34,6 +36,7 @@ const mapDispatchToProps = dispatch => ({
   undo: () => dispatch(UndoActionCreators.undo()),
   redo: () => dispatch(UndoActionCreators.redo()),
   tryActivateEditing: () => dispatch(tryActivateEditing()),
+  fetchPrometheusData: (nodeId, query) => dispatch(fetchPrometheusData(nodeId, query)),
   dispatch: dispatch
 })
 

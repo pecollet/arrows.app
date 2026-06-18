@@ -15,6 +15,7 @@ const getSelection = (state) => state.selection
 const getMouse = (state) => state.mouse
 const getViewTransformation = (state) => state.viewTransformation
 const getCachedImages = (state) => state.cachedImages
+const getPrometheusData = (state) => state.prometheusData || {}
 
 export const getPresentGraph = state => state.graph.present || state.graph
 
@@ -40,24 +41,25 @@ export const measureTextContext = (() => {
 })()
 
 export const getVisualNode = (() => {
-  const factory = (node, graph, selection, cachedImages) => {
+  const factory = (node, graph, selection, cachedImages, prometheusState) => {
     return new VisualNode(
       node,
       graph,
       nodeSelected(selection, node.id),
       nodeEditing(selection, node.id),
       measureTextContext,
-      cachedImages
+      cachedImages,
+      prometheusState
     )
   }
   return memoize(factory, { max: 10000 })
 })()
 
 export const getVisualGraph = createSelector(
-  [getGraph, getSelection, getCachedImages],
-  (graph, selection, cachedImages) => {
+  [getGraph, getSelection, getCachedImages, getPrometheusData],
+  (graph, selection, cachedImages, prometheusData) => {
     const visualNodes = graph.nodes.reduce((nodeMap, node) => {
-      nodeMap[node.id] = getVisualNode(node, graph, selection, cachedImages)
+      nodeMap[node.id] = getVisualNode(node, graph, selection, cachedImages, prometheusData[node.id])
       return nodeMap
     }, {})
 

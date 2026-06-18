@@ -175,41 +175,41 @@ const adjustNodeProperties = (properties: Record<string, string>) => {
   const adjusted = { ...properties }
   
   if (!Object.hasOwn(adjusted, 'unit')) {
-    adjusted.unit = ''
+    adjusted['unit'] = ''
   }
   if (!Object.hasOwn(adjusted, 'name')) {
-    adjusted.name = ''
+    adjusted['name'] = ''
   }
 
   if (Object.hasOwn(adjusted, 'type')) {
-    const type = adjusted.type
+    const type = adjusted['type']
     if (type === 'metric') {
       if (!Object.hasOwn(adjusted, 'promQL')) {
-        adjusted.promQL = ''
+        adjusted['promQL'] = ''
       }
-      delete adjusted.SQL
-      delete adjusted.value
+      delete adjusted['SQL']
+      delete adjusted['value']
     } else if (type === 'query log') {
       if (!Object.hasOwn(adjusted, 'SQL')) {
-        adjusted.SQL = ''
+        adjusted['SQL'] = ''
       }
-      delete adjusted.promQL
-      delete adjusted.value
+      delete adjusted['promQL']
+      delete adjusted['value']
     } else if (['neo4j setting', 'server config', 'client config'].includes(type)) {
       if (!Object.hasOwn(adjusted, 'value')) {
-        adjusted.value = ''
+        adjusted['value'] = ''
       }
-      delete adjusted.promQL
-      delete adjusted.SQL
+      delete adjusted['promQL']
+      delete adjusted['SQL']
     } else {
-      delete adjusted.promQL
-      delete adjusted.SQL
-      delete adjusted.value
+      delete adjusted['promQL']
+      delete adjusted['SQL']
+      delete adjusted['value']
     }
   } else {
-    delete adjusted.promQL
-    delete adjusted.SQL
-    delete adjusted.value
+    delete adjusted['promQL']
+    delete adjusted['SQL']
+    delete adjusted['value']
   }
 
   return adjusted

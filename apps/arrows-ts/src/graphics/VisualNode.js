@@ -16,9 +16,10 @@ import {distribute} from "./circumferentialDistribution";
 import {orientationAngles, orientationFromAngle, orientationFromName} from "./circumferentialTextAlignment";
 import {Vector} from "../model/Vector";
 import {ComponentStack} from "./ComponentStack";
+import {PrometheusPlot} from "./PrometheusPlot";
 
 export default class VisualNode {
-  constructor(node, graph, selected, editing, measureTextContext, imageCache) {
+  constructor(node, graph, selected, editing, measureTextContext, imageCache, prometheusState) {
     this.node = node
     this.selected = selected
     this.editing = editing
@@ -47,7 +48,9 @@ export default class VisualNode {
     const hasIcon = !!iconImage
     const hasCaption = !!node.caption
     const hasLabels = node.labels.length > 0
-    const hasProperties = Object.keys(node.properties).length > 0
+    const visualProperties = { ...node.properties }
+    delete visualProperties.promql
+    const hasProperties = Object.keys(visualProperties).length > 0
 
     const outsidePosition = style('outside-position')
     switch (outsidePosition) {
@@ -110,13 +113,18 @@ export default class VisualNode {
       switch (propertyPosition) {
         case 'inside':
           this.insideComponents.push(this.properties = new NodePropertiesInside(
-            node.properties, editing, style, measureTextContext))
+            visualProperties, editing, style, measureTextContext))
           break
 
         default:
           this.outsideComponents.push(this.properties = new PropertiesOutside(
-            node.properties, this.outsideOrientation, editing, style, measureTextContext))
+            visualProperties, this.outsideOrientation, editing, style, measureTextContext))
       }
+    }
+
+    if (node.properties.promql) {
+      this.outsideComponents.push(this.prometheusPlot = new PrometheusPlot(
+        node.id, prometheusState, this.outsideOrientation, style))
     }
 
     if (this.internalScaleFactor === undefined) {
