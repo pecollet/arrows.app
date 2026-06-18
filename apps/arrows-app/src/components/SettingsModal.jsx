@@ -6,7 +6,9 @@ import {
   retrievePrometheusUrl,
   rememberPrometheusUrl,
   retrievePrometheusGcpServiceAccountData,
-  rememberPrometheusGcpServiceAccountData
+  rememberPrometheusGcpServiceAccountData,
+  retrieveBigQueryProjectId,
+  rememberBigQueryProjectId
 } from "../actions/localStorage"
 
 class SettingsModal extends Component {
@@ -14,7 +16,8 @@ class SettingsModal extends Component {
     super(props)
     this.state = {
       prometheusUrl: retrievePrometheusUrl(),
-      prometheusGcpServiceAccountData: retrievePrometheusGcpServiceAccountData()
+      prometheusGcpServiceAccountData: retrievePrometheusGcpServiceAccountData(),
+      bigQueryProjectId: retrieveBigQueryProjectId()
     }
   }
 
@@ -22,7 +25,8 @@ class SettingsModal extends Component {
     if (this.props.showModal && !prevProps.showModal) {
       this.setState({
         prometheusUrl: retrievePrometheusUrl(),
-        prometheusGcpServiceAccountData: retrievePrometheusGcpServiceAccountData()
+        prometheusGcpServiceAccountData: retrievePrometheusGcpServiceAccountData(),
+        bigQueryProjectId: retrieveBigQueryProjectId()
       })
     }
   }
@@ -32,9 +36,10 @@ class SettingsModal extends Component {
   }
 
   onSave = () => {
-    const { prometheusUrl, prometheusGcpServiceAccountData } = this.state
+    const { prometheusUrl, prometheusGcpServiceAccountData, bigQueryProjectId } = this.state
     rememberPrometheusUrl(prometheusUrl)
     rememberPrometheusGcpServiceAccountData(prometheusGcpServiceAccountData)
+    rememberBigQueryProjectId(bigQueryProjectId)
     this.props.onCancel()
   }
 
@@ -43,7 +48,7 @@ class SettingsModal extends Component {
   }
 
   render() {
-    const { prometheusUrl, prometheusGcpServiceAccountData } = this.state
+    const { prometheusUrl, prometheusGcpServiceAccountData, bigQueryProjectId } = this.state
     return (
       <Modal
         size="small"
@@ -70,6 +75,15 @@ class SettingsModal extends Component {
                 name="prometheusGcpServiceAccountData"
                 onChange={this.inputUpdated}
                 rows={10}
+              />
+            </Form.Field>
+            <Form.Field>
+              <label>BQ_PROJECT_ID</label>
+              <Form.Input
+                placeholder="Google BigQuery Project ID"
+                value={bigQueryProjectId}
+                name="bigQueryProjectId"
+                onChange={this.inputUpdated}
               />
             </Form.Field>
           </Form>

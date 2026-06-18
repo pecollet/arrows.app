@@ -12,6 +12,7 @@ import {computeCanvasSize} from "../model/applicationLayout";
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 import {getBackgroundImage} from "../selectors";
 import {fetchPrometheusData} from "../actions/prometheus";
+import {fetchBigQueryData} from "../actions/bigQuery";
 
 const mapStateToProps = state => {
   return {
@@ -24,7 +25,8 @@ const mapStateToProps = state => {
     canvasSize: computeCanvasSize(state.applicationLayout),
     viewTransformation: state.viewTransformation,
     storage: state.storage,
-    prometheusData: state.prometheusData
+    prometheusData: state.prometheusData,
+    bigQueryData: state.bigQueryData
   }
 }
 
@@ -37,6 +39,7 @@ const mapDispatchToProps = dispatch => ({
   redo: () => dispatch(UndoActionCreators.redo()),
   tryActivateEditing: () => dispatch(tryActivateEditing()),
   fetchPrometheusData: (nodeId, query) => dispatch(fetchPrometheusData(nodeId, query)),
+  fetchBigQueryData: (nodeId, sql) => dispatch(fetchBigQueryData(nodeId, sql)),
   dispatch: dispatch
 })
 

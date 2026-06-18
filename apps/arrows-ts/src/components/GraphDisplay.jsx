@@ -78,12 +78,14 @@ class GraphDisplay extends Component {
     this.fitCanvasSize(this.canvas, this.props.canvasSize.width, this.props.canvasSize.height)
     this.drawVisuals()
     this.checkPrometheusQueries()
+    this.checkBigQueryQueries()
   }
 
   componentDidUpdate() {
     this.fitCanvasSize(this.canvas, this.props.canvasSize.width, this.props.canvasSize.height)
     this.drawVisuals()
     this.checkPrometheusQueries()
+    this.checkBigQueryQueries()
   }
 
   checkPrometheusQueries() {
@@ -98,6 +100,24 @@ class GraphDisplay extends Component {
           const cached = prometheusData && prometheusData[node.id]
           if (!cached || cached.query !== interpolatedQuery) {
             fetchPrometheusData(node.id, interpolatedQuery)
+          }
+        }
+      }
+    })
+  }
+
+  checkBigQueryQueries() {
+    const { visualGraph, bigQueryData, fetchBigQueryData } = this.props
+    if (!visualGraph || !visualGraph.graph || !visualGraph.graph.nodes || !fetchBigQueryData) return
+
+    visualGraph.graph.nodes.forEach(node => {
+      const sql = node.properties && node.properties.SQL
+      if (sql) {
+        const interpolatedQuery = interpolatePromQL(sql, node.properties)
+        if (interpolatedQuery) {
+          const cached = bigQueryData && bigQueryData[node.id]
+          if (!cached || cached.query !== interpolatedQuery) {
+            fetchBigQueryData(node.id, interpolatedQuery)
           }
         }
       }

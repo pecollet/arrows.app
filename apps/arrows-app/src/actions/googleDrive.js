@@ -3,7 +3,7 @@ import {googleDriveSignInStatusChanged} from "./storage";
 import {renderPngForThumbnail} from "../graphics/utils/offScreenCanvasRenderer";
 import {indexableText} from "../model/Graph";
 export const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
-export const SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.install';
+export const SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/bigquery.readonly';
 
 export const initGoogleDriveApi = (store) => {
   const initClient = () => {

@@ -31,6 +31,9 @@ class GoogleSignInModal extends Component {
               the <a href='https://developers.google.com/drive/api/v3/about-apps' target='_blank'>
                 Google Drive UI</a>.
             </li>
+            <li>bigquery.readonly - View and query your BigQuery data.
+              This means that the app will be able to run queries to visualize log data.
+            </li>
           </ul>
           <p>Please see the <a href='https://developers.google.com/drive/api/v3/about-auth' target='_blank'>
             Google documentation</a> if you'd like to learn more about these permissions.</p>

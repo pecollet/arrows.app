@@ -17,6 +17,8 @@ import {orientationAngles, orientationFromAngle, orientationFromName} from "./ci
 import {Vector} from "../model/Vector";
 import {ComponentStack} from "./ComponentStack";
 import {PrometheusPlot} from "./PrometheusPlot";
+import {ConstantPlot} from "./ConstantPlot";
+import {BigQueryPlot} from "./BigQueryPlot";
 
 const typeColorMap = {
   'metric': '#E1F5FE',       // very light blue
@@ -56,7 +58,7 @@ function getColorForType(type) {
 }
 
 export default class VisualNode {
-  constructor(node, graph, selected, editing, measureTextContext, imageCache, prometheusState) {
+  constructor(node, graph, selected, editing, measureTextContext, imageCache, prometheusState, bigQueryState) {
     this.node = node
     this.selected = selected
     this.editing = editing
@@ -104,6 +106,8 @@ export default class VisualNode {
     const hasLabels = node.labels.length > 0
     const visualProperties = { ...node.properties }
     delete visualProperties.promQL
+    delete visualProperties.SQL
+    delete visualProperties.value
     Object.keys(visualProperties).forEach(key => {
       if (key.startsWith('param_')) {
         delete visualProperties[key]
@@ -185,6 +189,24 @@ export default class VisualNode {
     if (promQL) {
       this.outsideComponents.push(this.prometheusPlot = new PrometheusPlot(
         node.id, prometheusState, this.outsideOrientation, style))
+    }
+
+    const isConfigNode = (node.labels && (
+      node.labels.includes('neo4j setting') ||
+      node.labels.includes('server config') ||
+      node.labels.includes('client config')
+    )) || (node.properties && ['neo4j setting', 'server config', 'client config'].includes(node.properties.type))
+
+    if (isConfigNode && node.properties && Object.prototype.hasOwnProperty.call(node.properties, 'value')) {
+      const typeLabel = (node.properties.type || node.labels.find(l => ['neo4j setting', 'server config', 'client config'].includes(l)) || 'CONFIG VALUE')
+      this.outsideComponents.push(this.constantPlot = new ConstantPlot(
+        node.id, node.properties.value, typeLabel, this.outsideOrientation, style))
+    }
+
+    const sql = node.properties && node.properties.SQL
+    if (sql) {
+      this.outsideComponents.push(this.bigQueryPlot = new BigQueryPlot(
+        node.id, bigQueryState, this.outsideOrientation, style))
     }
 
     if (this.internalScaleFactor === undefined) {
