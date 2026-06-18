@@ -123,6 +123,8 @@ class Header extends PureComponent {
             <div className="divider"/>
             <div role="option" className="item" onClick={this.props.onImportClick}>Import</div>
             <div className="divider"/>
+            <div role="option" className="item" onClick={this.props.onSettingsClick}>Settings</div>
+            <div className="divider"/>
             <div role="option" className="item" onClick={this.props.onHelpClick}>Help</div>
             {this.props.googleDrive?.signedIn && this.props.storage.mode === 'GOOGLE_DRIVE' ? (
               <>

@@ -9,6 +9,7 @@ import {computeCanvasSize, inspectorWidth} from "@neo4j-arrows/model";
 import ExportContainer from "../containers/ExportContainer";
 import GoogleSignInModal from "../components/editors/GoogleSignInModal";
 import HelpModal from "../components/HelpModal";
+import SettingsModal from "../components/SettingsModal";
 import GoogleDrivePicker from '../components/GoogleDrivePickerWrapper'
 import {getFileFromGoogleDrive, pickDiagramCancel} from "../actions/storage"
 import FooterContainer from "../containers/FooterContainer";
@@ -96,6 +97,7 @@ class App extends Component<AppProps> {
         {localStorageModal}
         <GoogleSignInModal/>
         <HelpModal/>
+        <SettingsModal/>
         <HeaderContainer/>
         <section style={{
           flex: 2,

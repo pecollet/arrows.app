@@ -69,3 +69,24 @@ export const loadFavoriteExportTab = () => {
 export const saveFavoriteExportTab = (index) => {
   save(key_favoriteExportTab, index)
 }
+
+const key_prometheusUrl = "neo4j-arrows-app.prometheusUrl"
+const key_prometheusGcpServiceAccountData = "neo4j-arrows-app.prometheusGcpServiceAccountData"
+
+export const rememberPrometheusUrl = (url) => save(key_prometheusUrl, url)
+export const retrievePrometheusUrl = () => {
+  try {
+    return load(key_prometheusUrl) || ""
+  } catch (e) {
+    return ""
+  }
+}
+
+export const rememberPrometheusGcpServiceAccountData = (data) => save(key_prometheusGcpServiceAccountData, data)
+export const retrievePrometheusGcpServiceAccountData = () => {
+  try {
+    return load(key_prometheusGcpServiceAccountData) || ""
+  } catch (e) {
+    return ""
+  }
+}

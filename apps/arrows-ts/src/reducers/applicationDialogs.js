@@ -3,7 +3,8 @@ export default function applicationDialogs(state = {
   showExportDialog: false,
   showSaveAsDialog: false,
   showImportDialog: false,
-  showHelpDialog: !retrieveHelpDismissed()
+  showHelpDialog: !retrieveHelpDismissed(),
+  showSettingsDialog: false
 }, action) {
   switch (action.type) {
     case 'SHOW_EXPORT_DIALOG':
@@ -52,6 +53,18 @@ export default function applicationDialogs(state = {
       return {
         ...state,
         showHelpDialog: false
+      }
+
+    case 'SHOW_SETTINGS_DIALOG':
+      return {
+        ...state,
+        showSettingsDialog: true
+      }
+
+    case 'HIDE_SETTINGS_DIALOG':
+      return {
+        ...state,
+        showSettingsDialog: false
       }
 
     default:
