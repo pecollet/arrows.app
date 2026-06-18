@@ -90,25 +90,34 @@ export class LabelRow extends Component {
     )
 
     const labelField = (
-      <Input
+      <select
         value={label}
         onChange={(event) => onRenameLabel(event.target.value)}
-        transparent
-      />
+        style={{
+          border: 'none',
+          background: 'transparent',
+          outline: 'none',
+          padding: 0,
+          margin: 0,
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          width: '100%'
+        }}
+      >
+        {!['Variable', 'Treatment', 'Symptom'].includes(label) && (
+          <option value={label}>{label || "Select Label..."}</option>
+        )}
+        <option value="Variable">Variable</option>
+        <option value="Treatment">Treatment</option>
+        <option value="Symptom">Symptom</option>
+      </select>
     )
 
     return (
       <Table.Row onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
         <Table.Cell width={3} collapsing>
           <Form.Field>
-            <Popup
-              trigger={labelField}
-              content={popupContent}
-              on='focus'
-              {...(labelSummary.length > 0 || status === 'PARTIAL' ? {} : {open: false})}
-              position='bottom left'
-              flowing
-            />
+            {labelField}
           </Form.Field>
         </Table.Cell>
         <Table.Cell width={3}>

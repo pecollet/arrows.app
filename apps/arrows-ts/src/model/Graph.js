@@ -12,7 +12,12 @@ export const emptyGraph = () => {
       caption: '',
       style: {},
       labels: [],
-      properties: {}
+      properties: {
+        type: 'metric',
+        unit: '',
+        name: '',
+        promQL: ''
+      }
     }],
     relationships: [],
     style: completeWithDefaults({})

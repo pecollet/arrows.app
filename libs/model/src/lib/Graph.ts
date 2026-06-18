@@ -21,7 +21,12 @@ export const emptyGraph = ():Graph => {
       caption: '',
       style: {},
       labels: [],
-      properties: {}
+      properties: {
+        type: 'metric',
+        unit: '',
+        name: '',
+        promQL: ''
+      }
     }],
     relationships: [],
     style: completeWithDefaults({})

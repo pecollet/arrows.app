@@ -22,6 +22,43 @@ import { CanvasAdaptor } from "./utils/CanvasAdaptor";
 import { TextMeasurementContext } from "./utils/TextMeasurementContext";
 import { DrawingContext } from "./utils/DrawingContext";
 
+const typeColorMap: Record<string, string> = {
+  'metric': '#E1F5FE',       // very light blue
+  'query log': '#E8F5E9',     // very light green
+  'neo4j setting': '#FFFDE7', // very light yellow/amber
+  'server config': '#FFF3E0', // very light orange
+  'client config': '#F3E5F5', // very light purple/violet
+  'variable': '#E0F7FA',      // light cyan
+  'treatment': '#E3F2FD',     // light blue
+  'symptom': '#FBE9E7'        // light orange/red
+}
+
+const typePalette: string[] = [
+  '#E8F5E9', // green
+  '#FFF3E0', // orange
+  '#E1F5FE', // blue
+  '#F3E5F5', // purple
+  '#FFFDE7', // yellow
+  '#E0F7FA', // cyan
+  '#FBE9E7', // deep orange
+  '#EDE7F6', // deep purple
+  '#F1F8E9'  // light green
+]
+
+function getColorForType(type?: string): string {
+  if (!type) return '#ffffff'
+  const normalized = type.toLowerCase().trim()
+  if (typeColorMap[normalized]) {
+    return typeColorMap[normalized]
+  }
+  let hash = 0
+  for (let i = 0; i < normalized.length; i++) {
+    hash = normalized.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  const index = Math.abs(hash) % typePalette.length
+  return typePalette[index]
+}
+
 export class VisualNode {
   internalRadius: number;
   radius: number;
@@ -42,7 +79,24 @@ export class VisualNode {
   constructor(readonly node:Node, readonly graph:Graph, readonly selected:boolean, readonly editing:boolean, 
     measureTextContext:TextMeasurementContext, imageCache:Record<string,ImageInfo>) {
 
-    const style = (styleAttribute:string) => getStyleSelector(node, styleAttribute)(graph)
+    const baseStyle = (styleAttribute:string) => getStyleSelector(node, styleAttribute)(graph)
+    const style = (styleAttribute:string) => {
+      if (styleAttribute === 'border-color') {
+        if (node.labels && node.labels.includes('Treatment')) {
+          return '#2E86DE' // Nice blue
+        }
+        if (node.labels && node.labels.includes('Symptom')) {
+          return '#F36924' // Nice orange
+        }
+      }
+      if (styleAttribute === 'node-color') {
+        const type = node.properties && node.properties.type
+        if (type) {
+          return getColorForType(type)
+        }
+      }
+      return baseStyle(styleAttribute)
+    }
 
     this.internalRadius = style('radius') as number
     this.radius = this.internalRadius + style('border-width')
@@ -66,7 +120,7 @@ export class VisualNode {
     const hasIcon = !!iconImage
     const hasCaption = !!node.caption
     const hasLabels = node.labels.length > 0
-    const hasProperties = Object.keys(node.properties).length > 0
+    const hasProperties = false
 
     const outsidePosition = style('outside-position')
     switch (outsidePosition) {

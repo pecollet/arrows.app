@@ -18,7 +18,7 @@ export class LabelsEditor extends Component {
       const position = nodeLabels.pillPositions[index]
       const lineHeight = pill.font.fontSize * 1.2
       return (
-        <input
+        <select
           key={'pill-' + index}
           value={pill.text}
           onKeyDown={this.props.onKeyDown}
@@ -36,9 +36,17 @@ export class LabelsEditor extends Component {
             background: 'transparent',
             textAlign: 'left',
             ...pill.font,
-            lineHeight: 1.2
+            lineHeight: 1.2,
+            cursor: 'pointer'
           }}
-        />
+        >
+          {!['Variable', 'Treatment', 'Symptom'].includes(pill.text) && (
+            <option value={pill.text}>{pill.text || "Select Label..."}</option>
+          )}
+          <option value="Variable">Variable</option>
+          <option value="Treatment">Treatment</option>
+          <option value="Symptom">Symptom</option>
+        </select>
       )
     })
   }

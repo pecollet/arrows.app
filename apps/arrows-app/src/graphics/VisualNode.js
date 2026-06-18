@@ -18,13 +18,67 @@ import {Vector} from "../model/Vector";
 import {ComponentStack} from "./ComponentStack";
 import {PrometheusPlot} from "./PrometheusPlot";
 
+const typeColorMap = {
+  'metric': '#E1F5FE',       // very light blue
+  'query log': '#E8F5E9',     // very light green
+  'neo4j setting': '#FFFDE7', // very light yellow/amber
+  'server config': '#FFF3E0', // very light orange
+  'client config': '#F3E5F5', // very light purple/violet
+  'variable': '#E0F7FA',      // light cyan
+  'treatment': '#E3F2FD',     // light blue
+  'symptom': '#FBE9E7'        // light orange/red
+}
+
+const typePalette = [
+  '#E8F5E9', // green
+  '#FFF3E0', // orange
+  '#E1F5FE', // blue
+  '#F3E5F5', // purple
+  '#FFFDE7', // yellow
+  '#E0F7FA', // cyan
+  '#FBE9E7', // deep orange
+  '#EDE7F6', // deep purple
+  '#F1F8E9'  // light green
+]
+
+function getColorForType(type) {
+  if (!type) return '#ffffff'
+  const normalized = type.toLowerCase().trim()
+  if (typeColorMap[normalized]) {
+    return typeColorMap[normalized]
+  }
+  let hash = 0
+  for (let i = 0; i < normalized.length; i++) {
+    hash = normalized.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  const index = Math.abs(hash) % typePalette.length
+  return typePalette[index]
+}
+
 export default class VisualNode {
   constructor(node, graph, selected, editing, measureTextContext, imageCache, prometheusState) {
     this.node = node
     this.selected = selected
     this.editing = editing
 
-    const style = styleAttribute => getStyleSelector(node, styleAttribute)(graph)
+    const baseStyle = styleAttribute => getStyleSelector(node, styleAttribute)(graph)
+    const style = styleAttribute => {
+      if (styleAttribute === 'border-color') {
+        if (node.labels && node.labels.includes('Treatment')) {
+          return '#2E86DE' // Nice blue
+        }
+        if (node.labels && node.labels.includes('Symptom')) {
+          return '#F36924' // Nice orange
+        }
+      }
+      if (styleAttribute === 'node-color') {
+        const type = node.properties && node.properties.type
+        if (type) {
+          return getColorForType(type)
+        }
+      }
+      return baseStyle(styleAttribute)
+    }
 
     this.internalRadius = style('radius')
     this.radius = this.internalRadius + style('border-width')
@@ -50,7 +104,7 @@ export default class VisualNode {
     const hasLabels = node.labels.length > 0
     const visualProperties = { ...node.properties }
     delete visualProperties.promql
-    const hasProperties = Object.keys(visualProperties).length > 0
+    const hasProperties = false
 
     const outsidePosition = style('outside-position')
     switch (outsidePosition) {
