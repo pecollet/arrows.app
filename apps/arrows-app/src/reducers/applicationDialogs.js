@@ -4,7 +4,10 @@ export default function applicationDialogs(state = {
   showSaveAsDialog: false,
   showImportDialog: false,
   showHelpDialog: !retrieveHelpDismissed(),
-  showSettingsDialog: false
+  showSettingsDialog: false,
+  showPlotModal: false,
+  plotModalNodeId: null,
+  plotModalPlotType: null
 }, action) {
   switch (action.type) {
     case 'SHOW_EXPORT_DIALOG':
@@ -65,6 +68,22 @@ export default function applicationDialogs(state = {
       return {
         ...state,
         showSettingsDialog: false
+      }
+
+    case 'SHOW_PLOT_MODAL':
+      return {
+        ...state,
+        showPlotModal: true,
+        plotModalNodeId: action.nodeId,
+        plotModalPlotType: action.plotType
+      }
+
+    case 'HIDE_PLOT_MODAL':
+      return {
+        ...state,
+        showPlotModal: false,
+        plotModalNodeId: null,
+        plotModalPlotType: null
       }
 
     default:

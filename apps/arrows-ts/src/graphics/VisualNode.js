@@ -324,4 +324,16 @@ export default class VisualNode {
       this.outsideComponents.distanceFrom(outsidePoint)
     )
   }
+
+  componentAtPoint(point) {
+    const localPoint = point.translate(this.position.vectorFromOrigin().invert())
+    const outsidePoint = localPoint.translate(this.outsideOffset.invert())
+    for (const offsetComponent of this.outsideComponents.offsetComponents) {
+      const componentPoint = outsidePoint.translate(new Vector(0, -offsetComponent.top))
+      if (offsetComponent.component.distanceFrom(componentPoint) === 0) {
+        return offsetComponent.component
+      }
+    }
+    return null
+  }
 }

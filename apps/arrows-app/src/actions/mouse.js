@@ -7,6 +7,7 @@ import {selectItemsInMarquee, setMarquee} from "./selectionMarquee"
 import {getEventHandlers} from "../selectors/layers";
 import {canvasPadding, computeCanvasSize, subtractPadding} from "../model/applicationLayout";
 import {Vector} from "../model/Vector";
+import {showPlotModal} from "./applicationDialogs"
 
 const toGraphPosition = (state, canvasPosition) => state.viewTransformation.inverse(canvasPosition)
 
@@ -108,6 +109,14 @@ export const mouseDown = (canvasPosition, multiSelectModifierKey) => {
       if (item) {
         switch (item.entityType) {
           case 'node':
+            const visualNode = visualGraph.nodes[item.id]
+            if (visualNode) {
+              const clickedComponent = visualNode.componentAtPoint(graphPosition)
+              if (clickedComponent && ['PROMETHEUS_PLOT', 'CONSTANT_PLOT', 'BIGQUERY_PLOT'].includes(clickedComponent.type)) {
+                dispatch(showPlotModal(item.id, clickedComponent.type))
+                break
+              }
+            }
             dispatch(toggleSelection([item], multiSelectModifierKey ? 'xor' : 'at-least'))
             dispatch(mouseDownOnNode(item, canvasPosition, graphPosition))
             break

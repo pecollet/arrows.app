@@ -57,3 +57,17 @@ export const hideSettingsDialog = () => {
     type: 'HIDE_SETTINGS_DIALOG'
   }
 }
+
+export const showPlotModal = (nodeId, plotType) => {
+  return {
+    type: 'SHOW_PLOT_MODAL',
+    nodeId,
+    plotType
+  }
+}
+
+export const hidePlotModal = () => {
+  return {
+    type: 'HIDE_PLOT_MODAL'
+  }
+}
