@@ -99,10 +99,43 @@ async function getGcpAccessToken(serviceAccountJson) {
 }
 
 export const fetchPrometheusData = (nodeId, query) => async (dispatch, getState) => {
+  const settings = getState().prometheusSettings || {
+    timeRangeType: "relative",
+    relativeRange: "1h",
+    absoluteStart: "",
+    absoluteEnd: "",
+    step: 30
+  }
+
+  const step = settings.step || 30
+
+  let start, end
+  if (settings.timeRangeType === 'custom' && settings.absoluteStart && settings.absoluteEnd) {
+    const sDate = new Date(settings.absoluteStart)
+    const eDate = new Date(settings.absoluteEnd)
+    start = isNaN(sDate.getTime()) ? Math.floor(Date.now() / 1000) - 3600 : Math.floor(sDate.getTime() / 1000)
+    end = isNaN(eDate.getTime()) ? Math.floor(Date.now() / 1000) : Math.floor(eDate.getTime() / 1000)
+  } else {
+    const nowSec = Math.floor(Date.now() / 1000)
+    end = Math.floor(nowSec / step) * step
+    const relativeSec = {
+      '15m': 15 * 60,
+      '1h': 3600,
+      '1d': 86400
+    }[settings.relativeRange || '1h'] || 3600
+    start = end - relativeSec
+  }
+
   dispatch({
     type: FETCH_PROMETHEUS_DATA_START,
     nodeId,
-    query
+    query,
+    step,
+    timeRangeType: settings.timeRangeType,
+    relativeRange: settings.relativeRange,
+    absoluteStart: settings.absoluteStart,
+    absoluteEnd: settings.absoluteEnd,
+    fetchedAt: Date.now()
   })
 
   try {
@@ -124,10 +157,6 @@ export const fetchPrometheusData = (nodeId, query) => async (dispatch, getState)
         throw new Error(`GCP Authentication failed: ${e.message}`)
       }
     }
-
-    const end = Math.floor(Date.now() / 1000)
-    const start = end - 3600 // 1 hour ago
-    const step = 15 // 15s interval (240 points)
 
     const url = `${baseUrl.replace(/\/$/, "")}/api/v1/query_range?query=${encodeURIComponent(query)}&start=${start}&end=${end}&step=${step}`
 
@@ -161,3 +190,16 @@ export const fetchPrometheusData = (nodeId, query) => async (dispatch, getState)
     })
   }
 }
+
+export const SET_PROMETHEUS_TIME_RANGE = "SET_PROMETHEUS_TIME_RANGE"
+export const SET_PROMETHEUS_STEP = "SET_PROMETHEUS_STEP"
+
+export const setPrometheusTimeRange = (timeRange) => ({
+  type: SET_PROMETHEUS_TIME_RANGE,
+  timeRange
+})
+
+export const setPrometheusStep = (step) => ({
+  type: SET_PROMETHEUS_STEP,
+  step
+})

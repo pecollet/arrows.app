@@ -15,6 +15,12 @@ export default function prometheusData(state = initialState, action) {
           ...state[action.nodeId],
           status: "loading",
           query: action.query,
+          step: action.step,
+          timeRangeType: action.timeRangeType,
+          relativeRange: action.relativeRange,
+          absoluteStart: action.absoluteStart,
+          absoluteEnd: action.absoluteEnd,
+          fetchedAt: action.fetchedAt,
           error: null
         }
       }

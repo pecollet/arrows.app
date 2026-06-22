@@ -8,8 +8,11 @@ import {
   retrievePrometheusGcpServiceAccountData,
   rememberPrometheusGcpServiceAccountData,
   retrieveBigQueryProjectId,
-  rememberBigQueryProjectId
+  rememberBigQueryProjectId,
+  retrievePrometheusStep,
+  rememberPrometheusStep
 } from "../actions/localStorage"
+import { setPrometheusStep } from "../actions/prometheus"
 
 class SettingsModal extends Component {
   constructor(props) {
@@ -17,7 +20,8 @@ class SettingsModal extends Component {
     this.state = {
       prometheusUrl: retrievePrometheusUrl(),
       prometheusGcpServiceAccountData: retrievePrometheusGcpServiceAccountData(),
-      bigQueryProjectId: retrieveBigQueryProjectId()
+      bigQueryProjectId: retrieveBigQueryProjectId(),
+      prometheusStep: retrievePrometheusStep()
     }
   }
 
@@ -26,7 +30,8 @@ class SettingsModal extends Component {
       this.setState({
         prometheusUrl: retrievePrometheusUrl(),
         prometheusGcpServiceAccountData: retrievePrometheusGcpServiceAccountData(),
-        bigQueryProjectId: retrieveBigQueryProjectId()
+        bigQueryProjectId: retrieveBigQueryProjectId(),
+        prometheusStep: retrievePrometheusStep()
       })
     }
   }
@@ -36,10 +41,15 @@ class SettingsModal extends Component {
   }
 
   onSave = () => {
-    const { prometheusUrl, prometheusGcpServiceAccountData, bigQueryProjectId } = this.state
+    const { prometheusUrl, prometheusGcpServiceAccountData, bigQueryProjectId, prometheusStep } = this.state
+    const stepVal = parseInt(prometheusStep, 10) || 30
     rememberPrometheusUrl(prometheusUrl)
     rememberPrometheusGcpServiceAccountData(prometheusGcpServiceAccountData)
     rememberBigQueryProjectId(bigQueryProjectId)
+    rememberPrometheusStep(stepVal)
+    if (this.props.onSave) {
+      this.props.onSave(stepVal)
+    }
     this.props.onCancel()
   }
 
@@ -48,7 +58,7 @@ class SettingsModal extends Component {
   }
 
   render() {
-    const { prometheusUrl, prometheusGcpServiceAccountData, bigQueryProjectId } = this.state
+    const { prometheusUrl, prometheusGcpServiceAccountData, bigQueryProjectId, prometheusStep } = this.state
     return (
       <Modal
         size="small"
@@ -75,6 +85,17 @@ class SettingsModal extends Component {
                 name="prometheusGcpServiceAccountData"
                 onChange={this.inputUpdated}
                 rows={10}
+              />
+            </Form.Field>
+            <Form.Field>
+              <label>PROMETHEUS_STEP_INTERVAL_SEC</label>
+              <Form.Input
+                type="number"
+                min="1"
+                placeholder="30"
+                value={prometheusStep}
+                name="prometheusStep"
+                onChange={this.inputUpdated}
               />
             </Form.Field>
             <Form.Field>
@@ -112,6 +133,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    onSave: (step) => {
+      dispatch(setPrometheusStep(step))
+    },
     onCancel: () => {
       dispatch(hideSettingsDialog())
     }

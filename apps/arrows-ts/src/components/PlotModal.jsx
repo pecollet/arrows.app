@@ -102,6 +102,30 @@ class PlotModal extends Component {
         })
       }
 
+      const settings = this.props.prometheusSettings || {
+        timeRangeType: "relative",
+        relativeRange: "1h",
+        absoluteStart: "",
+        absoluteEnd: ""
+      }
+
+      let defaultTMin, defaultTMax
+      if (settings.timeRangeType === 'custom' && settings.absoluteStart && settings.absoluteEnd) {
+        const sDate = new Date(settings.absoluteStart)
+        const eDate = new Date(settings.absoluteEnd)
+        defaultTMin = isNaN(sDate.getTime()) ? (Date.now() / 1000) - 3600 : sDate.getTime() / 1000
+        defaultTMax = isNaN(eDate.getTime()) ? (Date.now() / 1000) : eDate.getTime() / 1000
+      } else {
+        const now = Date.now() / 1000
+        const relativeSec = {
+          '15m': 15 * 60,
+          '1h': 3600,
+          '1d': 86400
+        }[settings.relativeRange || '1h'] || 3600
+        defaultTMin = now - relativeSec
+        defaultTMax = now
+      }
+
       let tMin = 0
       let tMax = 1
       if (allPoints.length > 0) {
@@ -112,9 +136,8 @@ class PlotModal extends Component {
           tMax += 1800
         }
       } else {
-        const now = Date.now() / 1000
-        tMin = now - 3600
-        tMax = now
+        tMin = defaultTMin
+        tMax = defaultTMax
       }
 
       this.setState({
@@ -635,7 +658,8 @@ const mapStateToProps = state => {
     plotType: state.applicationDialogs.plotModalPlotType,
     graph,
     prometheusData: state.prometheusData || {},
-    bigQueryData: state.bigQueryData || {}
+    bigQueryData: state.bigQueryData || {},
+    prometheusSettings: state.prometheusSettings || {}
   }
 }
 

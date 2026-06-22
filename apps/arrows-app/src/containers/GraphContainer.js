@@ -26,7 +26,8 @@ const mapStateToProps = state => {
     viewTransformation: state.viewTransformation,
     storage: state.storage,
     prometheusData: state.prometheusData,
-    bigQueryData: state.bigQueryData
+    bigQueryData: state.bigQueryData,
+    prometheusSettings: state.prometheusSettings
   }
 }
 

@@ -184,9 +184,13 @@ const adjustNodeProperties = (properties) => {
       }
       delete adjusted.SQL
       delete adjusted.value
+      delete adjusted.param_dbid
     } else if (type === 'query log') {
-      if (!adjusted.hasOwnProperty('SQL')) {
-        adjusted.SQL = ''
+      if (!adjusted.hasOwnProperty('SQL') || adjusted.SQL === '') {
+        adjusted.SQL = 'SELECT TIMESTAMP_TRUNC(timestamp, MINUTE) as t, avg(elapsedtimems) as value \nFROM `neo4j-cloud.query_logs_rev2.neo4j_query_materialized` \nWHERE  TIMESTAMP_TRUNC(timestamp, MINUTE) >= TIMESTAMP("$start_time") AND  \nTIMESTAMP_TRUNC(timestamp, MINUTE) < TIMESTAMP("$end_time")   \nAND dbid = "$param_dbid" group by TIMESTAMP_TRUNC(timestamp, MINUTE) \nORDER BY TIMESTAMP_TRUNC(timestamp, MINUTE) \nLIMIT 1000'
+      }
+      if (!adjusted.hasOwnProperty('param_dbid')) {
+        adjusted.param_dbid = ''
       }
       delete adjusted.promQL
       delete adjusted.value
@@ -196,15 +200,18 @@ const adjustNodeProperties = (properties) => {
       }
       delete adjusted.promQL
       delete adjusted.SQL
+      delete adjusted.param_dbid
     } else {
       delete adjusted.promQL
       delete adjusted.SQL
       delete adjusted.value
+      delete adjusted.param_dbid
     }
   } else {
     delete adjusted.promQL
     delete adjusted.SQL
     delete adjusted.value
+    delete adjusted.param_dbid
   }
 
   return adjusted
@@ -282,6 +289,9 @@ export const interpolatePromQL = (query, properties) => {
   if (!properties) return query
 
   return query.replace(/\$([a-zA-Z0-9_]+)/g, (match, varName) => {
+    if (varName === 'start_time' || varName === 'end_time') {
+      return properties[varName] !== undefined ? properties[varName] : match
+    }
     if (varName.startsWith('param_') && Object.prototype.hasOwnProperty.call(properties, varName)) {
       return properties[varName]
     }

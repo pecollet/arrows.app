@@ -73,6 +73,7 @@ export const saveFavoriteExportTab = (index) => {
 const key_prometheusUrl = "neo4j-arrows-app.prometheusUrl"
 const key_prometheusGcpServiceAccountData = "neo4j-arrows-app.prometheusGcpServiceAccountData"
 const key_bigQueryProjectId = "neo4j-arrows-app.bigQueryProjectId"
+const key_prometheusStep = "neo4j-arrows-app.prometheusStep"
 
 export const rememberPrometheusUrl = (url) => save(key_prometheusUrl, url)
 export const retrievePrometheusUrl = () => {
@@ -98,5 +99,15 @@ export const retrieveBigQueryProjectId = () => {
     return load(key_bigQueryProjectId) || ""
   } catch (e) {
     return ""
+  }
+}
+
+export const rememberPrometheusStep = (step) => save(key_prometheusStep, step)
+export const retrievePrometheusStep = () => {
+  try {
+    const step = load(key_prometheusStep)
+    return step !== null && step !== undefined ? parseInt(step, 10) : 30
+  } catch (e) {
+    return 30
   }
 }

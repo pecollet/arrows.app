@@ -17,6 +17,7 @@ import googleDrive from "./googleDrive"
 import cachedImages from "./cachedImages";
 import prometheusData from "./prometheusData";
 import bigQueryData from "./bigQueryData";
+import prometheusSettings from "./prometheusSettings";
 
 const arrowsApp = combineReducers({
   recentStorage,
@@ -36,7 +37,8 @@ const arrowsApp = combineReducers({
   googleDrive,
   cachedImages,
   prometheusData,
-  bigQueryData
+  bigQueryData,
+  prometheusSettings
 })
 
 export default arrowsApp

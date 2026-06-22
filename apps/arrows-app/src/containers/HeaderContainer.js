@@ -11,6 +11,7 @@ import {
   postCurrentDiagramAsNewFileOnGoogleDrive
 } from "../actions/storage";
 import {ActionCreators as UndoActionCreators} from "redux-undo";
+import {setPrometheusTimeRange} from "../actions/prometheus";
 
 const mapStateToProps = state => {
   return {
@@ -20,12 +21,16 @@ const mapStateToProps = state => {
       undo: state.graph.past.length < 1,
       redo: state.graph.future.length < 1
     },
-    storage: state.storage
+    storage: state.storage,
+    prometheusSettings: state.prometheusSettings
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
+    setPrometheusTimeRange: (timeRange) => {
+      dispatch(setPrometheusTimeRange(timeRange))
+    },
     onNewDiagram: (mode) => {
       switch (mode) {
         case 'GOOGLE_DRIVE':

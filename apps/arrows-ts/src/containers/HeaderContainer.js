@@ -13,6 +13,7 @@ import {
 import {ActionCreators as UndoActionCreators} from "redux-undo";
 import {signOut} from "../googleDriveAuth";
 import {clearGoogleDriveToken} from "../actions/googleDrive";
+import {setPrometheusTimeRange} from "../actions/prometheus";
 
 const mapStateToProps = state => {
   return {
@@ -23,12 +24,16 @@ const mapStateToProps = state => {
       redo: state.graph.future.length < 1
     },
     storage: state.storage,
-    googleDrive: state.googleDrive
+    googleDrive: state.googleDrive,
+    prometheusSettings: state.prometheusSettings
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
+    setPrometheusTimeRange: (timeRange) => {
+      dispatch(setPrometheusTimeRange(timeRange))
+    },
     onNewDiagram: (mode) => {
       switch (mode) {
         case 'GOOGLE_DRIVE':

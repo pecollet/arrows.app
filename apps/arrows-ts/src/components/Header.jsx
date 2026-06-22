@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react'
-import { Icon, Menu, Button, ButtonGroup } from 'semantic-ui-react'
+import { Icon, Menu, Button, ButtonGroup, Dropdown, Input } from 'semantic-ui-react'
 import { DiagramNameEditor } from "./DiagramNameEditor"
 import arrows_logo from "../images/arrows_logo.svg"
 import GoogleDriveShare from "./GoogleDriveShareWrapper"
@@ -93,6 +93,55 @@ class Header extends PureComponent {
       </div>
     ))
 
+    const timeRangeOptions = [
+      { key: '15m', text: 'Last 15 min', value: '15m' },
+      { key: '1h', text: 'Last hour', value: '1h' },
+      { key: '1d', text: 'Last day', value: '1d' },
+      { key: 'custom', text: 'Custom range...', value: 'custom' }
+    ]
+
+    const { prometheusSettings, setPrometheusTimeRange } = this.props
+    const { timeRangeType, relativeRange, absoluteStart, absoluteEnd } = prometheusSettings || {
+      timeRangeType: 'relative',
+      relativeRange: '1h',
+      absoluteStart: '',
+      absoluteEnd: ''
+    }
+
+    const handleTimeRangeChange = (_, { value }) => {
+      if (value === 'custom') {
+        setPrometheusTimeRange({
+          type: 'custom',
+          relativeRange,
+          absoluteStart: absoluteStart || new Date(Date.now() - 3600000).toISOString().substring(0, 16),
+          absoluteEnd: absoluteEnd || new Date().toISOString().substring(0, 16)
+        })
+      } else {
+        setPrometheusTimeRange({
+          type: 'relative',
+          relativeRange: value
+        })
+      }
+    }
+
+    const handleAbsoluteStartChange = (e) => {
+      setPrometheusTimeRange({
+        type: 'custom',
+        relativeRange,
+        absoluteStart: e.target.value,
+        absoluteEnd
+      })
+    }
+
+    const handleAbsoluteEndChange = (e) => {
+      setPrometheusTimeRange({
+        type: 'custom',
+        relativeRange,
+        absoluteStart,
+        absoluteEnd: e.target.value
+      })
+    }
+
     return (
       <Menu attached='top' style={{borderRadius: 0}} borderless>
         <div role="listbox" aria-expanded="true" className="ui item simple dropdown" tabIndex="0">
@@ -153,6 +202,34 @@ class Header extends PureComponent {
               onClick={this.props.redo}
             />
           </ButtonGroup>
+        </Menu.Item>
+        <Menu.Item>
+          <span style={{ marginRight: '0.5em', fontWeight: 'bold' }}>Time Range:</span>
+          <Dropdown
+            inline
+            options={timeRangeOptions}
+            value={timeRangeType === 'custom' ? 'custom' : relativeRange}
+            onChange={handleTimeRangeChange}
+          />
+          {timeRangeType === 'custom' && (
+            <div style={{ display: 'inline-flex', alignItems: 'center', marginLeft: '1em' }}>
+              <span style={{ marginRight: '0.5em', fontSize: '0.9em' }}>From:</span>
+              <Input
+                type="datetime-local"
+                size="mini"
+                value={absoluteStart}
+                onChange={handleAbsoluteStartChange}
+                style={{ marginRight: '1em' }}
+              />
+              <span style={{ marginRight: '0.5em', fontSize: '0.9em' }}>To:</span>
+              <Input
+                type="datetime-local"
+                size="mini"
+                value={absoluteEnd}
+                onChange={handleAbsoluteEndChange}
+              />
+            </div>
+          )}
         </Menu.Item>
         <Menu.Item style={{opacity: 0.6}}>
           <Icon name={storageIcon(this.props.storage.mode)}/>
